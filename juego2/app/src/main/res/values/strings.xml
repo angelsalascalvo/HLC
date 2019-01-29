@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">juego2</string>
+    <string name="explicacion">
+        Aprieta los botones en el orden correcto antes de que termine el tiempo, ten cuidado cada fase nueva aumenta la velocidad.
+    </string>
+    <string name="como_jugar">Cómo jugar</string>
+    <string name="random_buttons">RANDOM BUTTONS</string>
+    <string name="nombre">Nombre</string>
+    <string name="rbFacil">Fácil</string>
+    <string name="rbDificil">Difícil</string>
+    <string name="rbMedio">Medio</string>
+    <string name="fin">Fin Partida</string>
+    <string name="nueva_partida">Opciones de partida</string>
+    <string name="jugar">JUGAR</string>
+    <string name="volver">VOLVER</string>
+    <string name="enhorabuena">"¡Enhorabuena%1$s!\nHas llegado hasta la fase "</string>
+    <string name="continuar">Continuar Jugando</string>
+    <string name="inicio">Volver</string>
+    <string name="fase">"Fase %1$s"</string>
+    <string name="empty" />
+    <string name="space">" "</string>
+</resources>
