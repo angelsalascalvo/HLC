@@ -65,7 +65,10 @@ public class DialogoNombreNivel extends DialogFragment implements DialogInterfac
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Activity activity = getActivity();
+        Activity activity=null;
+        if(context instanceof Activity) {
+            activity =(Activity)context;
+        }
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
@@ -92,13 +95,13 @@ public class DialogoNombreNivel extends DialogFragment implements DialogInterfac
         int nivel = rgBotones.getCheckedRadioButtonId();
         switch (nivel){
             case R.id.rbFacil:
-                velocidad=60;
+                velocidad=80;
                 break;
             case R.id.rbMedio:
-                velocidad=40;
+                velocidad=60;
                 break;
             case R.id.rbDificil:
-                velocidad=20;
+                velocidad=40;
                 break;
         }
 
@@ -106,7 +109,10 @@ public class DialogoNombreNivel extends DialogFragment implements DialogInterfac
         switch (which){
             case DialogInterface.BUTTON_POSITIVE:
                 //Asignamos al metodo de la interfaz que mas tarde se implementara, los parametros adecuados
+                //Cuando damos en aceptar enviamos el nombre introducido y la velocidad en funcion del nivel
+                //Esto hace que se ejecute el método que implementaremos obligatoriamente en la clase donde creamos el dialogo
                 miListener.onAceptarDialogo(nombre, velocidad);
+
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 //Si no, se finaliza el activity

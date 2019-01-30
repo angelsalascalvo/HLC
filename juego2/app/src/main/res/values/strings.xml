@@ -19,4 +19,5 @@
     <string name="fase">"Fase %1$s"</string>
     <string name="empty" />
     <string name="space">" "</string>
+    <string name="perder">"Has perdido"</string>
 </resources>
