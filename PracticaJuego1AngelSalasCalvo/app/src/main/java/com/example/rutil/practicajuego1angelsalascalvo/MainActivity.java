@@ -1,159 +1,200 @@
 package com.example.rutil.practicajuego1angelsalascalvo;
 
-import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.design.widget.CoordinatorLayout;
+import android.content.DialogInterface;
+import android.content.Intent;
+
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Chronometer;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import java.util.Random;
+import android.widget.RadioButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout lyTablero;
-    private Button [][] hoyos;
-    private ImageButton ibJugar;
-    private Chronometer cronometro;
-    private boolean jugando;
-    private int fil=0, col=0; //Filas y columas para el panel de hoyos
-    private int meta; //Valor para finalizar partida
+    //Variables para referenciar datos pasados por intent
+    public final static String NUM_TOPOS="num_Topos";
+    public final static String NIVEL="nivel";
+    public final static String VIBRAR="vibrar";
+    public final static String SONAR="sonar";
+    public final static String GANADO="ganado";
+    public final static String TIEMPO="tiempo";
+    public final static String TOPOSATRAPADOS="topos_Atrapados";
+    public final static int REQUEST_CODE=1234;
+
+    private RadioButton rbFacil, rbMedio, rbDificil;
+    private SwitchCompat swSonar, swVibrar;
+    private SeekBar sbNumTopos;
+    private TextView tvNumTopos, tvToposFin, tvCronoFin, tvGanado;
+    private boolean ganado;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        inicializar();
-        generarHoyos();
+        //Obtener referencias de los elementos
+        iniciar();
 
-    }
-
-    public void inicializar(){
-        ibJugar=(ImageButton) findViewById(R.id.ibJugar);
-        cronometro=(Chronometer) findViewById(R.id.cronometro);
-        lyTablero=(LinearLayout) findViewById(R.id.lyTablero);
-
-        int dificultad=2;
-        jugando=true;
-
-        //En funcion de la dificultad establecemos valores de juego
-        switch (dificultad){
-            case 1:
-                fil=2;
-                col=2;
-                meta=10;
-                break;
-            case 2:
-                fil=3;
-                col=2;
-                meta=15;
-                break;
-            case 3:
-                fil=3;
-                col=3;
-                meta=30;
-                break;
-        }
-    }
-
-    public void generarHoyos(){
-        //inicializar array botones
-        hoyos = new Button[fil][col];
-        //Variable con altura y anchura como match_parent para ajustar botones y filas generadas al tablero
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT,1f);
-
-        for(int i=0 ; i<fil;i++){
-            //crear un layout por fila
-            LinearLayout lyFila = new LinearLayout(this);
-            lyFila.setOrientation(LinearLayout.HORIZONTAL);
-            //Establecer los parametros de tamaño relativos al padre para ajustarlos al maximo
-            lyFila.setLayoutParams(lp);
-
-            for (int j=0; j<col;j++){
-                //Crear boton
-                Button buttonHoyo = new Button(this);
-                //Establecer los parametros de tamaño a los botones para ajustarlos al maximo
-                buttonHoyo.setLayoutParams(lp);
-
-                //Establecer metodo para cuando se pulse un boton
-                buttonHoyo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        pulsadoHoyo(v);
-                    }
-                });
-
-                hoyos[i][j]=buttonHoyo; //incluir el boton en array
-                lyFila.addView(buttonHoyo); //añadir el boton al layout del tablero de juego
+        //Actualizar el valor de la barra de numero de topos
+        sbNumTopos.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //Incremento de la barra de 10 en 10
+                progress = ((int)Math.round(progress/10 ))*10;
+                seekBar.setProgress(progress);
+                tvNumTopos.setText(""+(sbNumTopos.getProgress()+10));
             }
 
-            //añadir la fila creada al layout
-            lyTablero.addView(lyFila);
-        }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
     }
 
-
-    public void pulsadoHoyo(View v){
-        //Comprobar si la partida esta iniciada
-        if(jugando) {
-            if (v == hoyos[0][0])
-                hoyoAleatorio().setBackgroundColor(Color.RED);
-        }
-    }
-
+    //----------------------------------------------------------------------------------------------
 
     /**
-     * METODO QUE DEVUELVE UN HOYO/BOTON DEL ARRAY DE FORMA ALEATORIA
-     * @return
+     * METODO PARA INICIALIZAR VISTA OBTENIENDO REFERENCIAS
      */
-    public Button hoyoAleatorio(){
-        Random r = new Random(System.currentTimeMillis());
-        //Numero Aleatorio entre 0 y numFilas
-        int aleatF = r.nextInt(fil);
-        //Numero Aleatorio entre 0 y numColumnas
-        int aleatC = r.nextInt(col);
+    public void iniciar(){
+        rbFacil=(RadioButton) findViewById(R.id.rbFacil);
+        rbMedio=(RadioButton) findViewById(R.id.rbMedio);
+        rbDificil=(RadioButton) findViewById(R.id.rbDificil);
 
-        //Devolver el boton del array correspondiente
-        return hoyos[aleatF][aleatC];
+        swSonar=(SwitchCompat) findViewById(R.id.swSonar);
+        swVibrar=(SwitchCompat) findViewById(R.id.swVibrar);
+
+        sbNumTopos=(SeekBar) findViewById(R.id.sbNumTopos);
+        tvNumTopos=(TextView) findViewById(R.id.tvContNumTopos);
+
+        ganado=false;
     }
 
+    //----------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // !!!!!!!!!!!!!!!!! BORRAR !!!!!!!!!!!!!!!!!!!!!!!!!!
     /**
-     * METODO PARA CALCULAR ALTURA DDE CADA BOTON/HOYO EN FUNCION DE LA PANTALLA
-     * @return
+     * METODO QUE SE EJECUTARÁ AL PULSAR EL BOTON DE JUGAR
+     * Cargará el activity del juego
+     * @param v
      */
-    public int calcAlturaHoyo(){
-        //Variable con los parametros de la pantalla
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
+    public void jugar(View v){
+        Bundle datos = new Bundle();
+        int nivel = 0;
 
-        //Obtener altura del layout superior en pixeles convirtiendo los 50 dp en px
-        int pxSuperior = Math.round(50 * (dm.densityDpi / 160f));
-        //Obtener altura de la pantalla
-        int pxPantalla = dm.heightPixels;
+        //Comprobar la dificultad seleccionada
+        if(rbFacil.isChecked())
+            nivel=1;
+        if(rbMedio.isChecked())
+            nivel=2;
+        if(rbDificil.isChecked())
+            nivel=3;
 
-        //Calcular altura de cada boton
-        return (pxPantalla-pxSuperior)/fil;
+        //Incluir los datos a enviar al intent en el bundler
+        datos.putInt(NIVEL,nivel);
+        datos.putInt(NUM_TOPOS,sbNumTopos.getProgress()+10);
+        datos.putBoolean(SONAR, swSonar.isChecked());
+        datos.putBoolean(VIBRAR, swVibrar.isChecked());
+
+        Intent i = new Intent(this, JuegoActivity.class);
+        i.putExtras(datos); //Enviar el bundler por con el intent
+        startActivityForResult(i, REQUEST_CODE); //Iniciar Activity pasando codigo
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO QUE SE EJECUTARÁ AL PULSAR EL BOTÓN DE INFORMACIÓN
+     * @param v
+     */
+    public void info(View v){
+        new AlertDialog.Builder(this)
+                .setView(R.layout.dialogo_info) //Layout personalizado
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA OBTENER DATOS RESULTANTES DEL ACTIVITY DE JUEGO
+     * @param reqCode
+     * @param resCode
+     * @param i
+     */
+    public void onActivityResult(int reqCode, int resCode, Intent i){
+        if(reqCode==REQUEST_CODE && resCode==RESULT_OK) {
+            ganado = i.getBooleanExtra(GANADO, true);
+
+            //En funcion de si a ganado o perdido se mostrará un dialogo u otro
+            if (ganado) {
+                String modo="";
+                if(rbFacil.isChecked())
+                    modo=" fácil.";
+                if(rbMedio.isChecked())
+                    modo=" medio.";
+                if(rbDificil.isChecked())
+                    modo=" dificil.";
+
+                dialogoGanar(i.getStringExtra(TIEMPO), i.getIntExtra(TOPOSATRAPADOS, 0), modo);
+            } else {
+                dialogoPerder();
+            }
+        }
+        super.onActivityResult(reqCode, resCode, i);
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA MOSTRAR EL DIALOGO CUANDO SE HA PERDIDO LA PARTIDA
+     */
+    public void dialogoPerder(){
+        new AlertDialog.Builder(this)
+                .setView(R.layout.dialogo_perder) //Layout personalizado
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA MOSTRAR EL DIALOGO CUANDO SE HA GANADO LA PARTIDA
+     */
+    public void dialogoGanar(String crono, int topos, String modo){
+        AlertDialog dialogoGanado = new AlertDialog.Builder(this)
+                .setView(R.layout.dialogo_ganado) //Layout personalizado
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setCancelable(false)
+                .show();
+
+        //Escribir datos de la partida
+        tvCronoFin = (TextView) ((AlertDialog) dialogoGanado).findViewById(R.id.tvCronoFin);
+        tvToposFin = (TextView) ((AlertDialog) dialogoGanado).findViewById(R.id.tvToposFin);
+        tvGanado = (TextView) ((AlertDialog) dialogoGanado).findViewById(R.id.tvGanado);
+        tvCronoFin.setText(crono);
+        tvToposFin.setText("x "+topos);
+        tvGanado.setText(tvGanado.getText()+modo);
     }
 }

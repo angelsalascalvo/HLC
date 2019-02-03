@@ -1,3 +1,25 @@
 <resources>
-    <string name="app_name">PracticaJuego1AngelSalasCalvo</string>
+    <string name="app_name">Atrapa los topos</string>
+    <string name="sonido">¿Sonido?</string>
+    <string name="vibrar">¿Vibración?</string>
+    <string name="numTopos">¿Con cuantos topos quieres jugar?</string>
+    <string name="nivel">Selecciona un nivel</string>
+    <string name="facil">Facil</string>
+    <string name="medio">Medio</string>
+    <string name="dificil">Dificil</string>
+    <string name="jugar">Jugar</string>
+    <string name="info">Info</string>
+    <string name="iniTitulo">HORA DE ATRAPAR TOPOS</string>
+    <string name="txtInicio">Da el pistoletazo de salida pulsando el icono de la esquina superior para comenzar.</string>
+    <string name="cuidado">Y recuerda... Cuidado con las serpientes!</string>
+    <string name="serpiente">VAYA!</string>
+    <string name="perdido">Parece que te has topado con una serpiente, la próxima vez ten más cuidado...</string>
+    <string name="enhorabuena">ENHORABUENA!</string>
+    <string name="ganado">Has conseguido atrapar todos los topos en modo </string>
+    <string name="informacion">INFORMACIÓN</string>
+    <string name="txtInfo">Bienvenido a "Atrapa los topos, en este juego tu misión es cazar todos los topos en el menor tiempo posible. Haz clic sobre los topos cuando salgan de su madriguera.
+        \nTen en cuenta lo siguiente:
+        \n- Si pulsas sobre un topo se sumará un punto.\n- Si pulsas una madriguera vacía se restara un punto.\n- Si pulsas sobre una serpiente perderas la partida.
+        \nEl juego acaba cuando atrapes el numero de topos indicados."</string>
+    <string name="nombre">Desarrollado por Ángel Salas Calvo</string>
 </resources>

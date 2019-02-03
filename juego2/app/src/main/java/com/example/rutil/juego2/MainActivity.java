@@ -55,4 +55,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             startActivity(i);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        setModoInmersivo();
+    }
 }

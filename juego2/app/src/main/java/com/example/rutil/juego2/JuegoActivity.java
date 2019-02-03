@@ -55,6 +55,41 @@ public class JuegoActivity extends BaseActivity implements DialogoNombreNivel.on
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO QUE ACTUARÁ CUANDO LA APLICACIÓN SE PAUSA
+     */
+    @Override
+    public void onPause(){
+        super.onPause();
+        //Guardar el estado del juego
+        if(contProgreso!=null){
+            contProgreso.cancel(true);
+            contProgreso=null;
+            //Almacenar en el un bundle o saco las variables (diccionario)
+            estado=new Bundle();
+            estado.putInt(KEY_VELOCIDAD,velocidad); //Las key son identificadores de los datos
+            estado.putInt(KEY_PROGRESO, progreso);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO QUE ACTUARÁ CUANDO LA APLICACIÓN SE REANUDA
+     */
+    @Override
+    public void onResume(){
+        super.onResume();
+        //poner en modo inmersivo
+        setModoInmersivo();
+        if(estado!=null && !partidaAcabada){
+            contProgreso = new ControlProgresoTask();
+            contProgreso.execute(estado.getInt(KEY_VELOCIDAD), estado.getInt(KEY_PROGRESO));
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+
     public void setView(){
         tvNombre=(TextView)findViewById(R.id.tvNombre);
         tvFase=(TextView)findViewById(R.id.tvFase);
@@ -198,7 +233,7 @@ public class JuegoActivity extends BaseActivity implements DialogoNombreNivel.on
     //----------------------------------------------------------------------------------------------
 
     /**
-     * METODO QUE PERMITIRÁ EJECUTAR LA BARRA DE PROGRESO EN SEGUNDO PLANO MIENTRAS SE CONTROLA
+     * CLASE INTERNA QUE PERMITIRÁ EJECUTAR LA BARRA DE PROGRESO EN SEGUNDO PLANO MIENTRAS SE CONTROLA
      * EL CONTROL DE BOTONES
      */
     //como parametros del asyncTask podemos pasar void si no queremos mandar nada
@@ -215,7 +250,7 @@ public class JuegoActivity extends BaseActivity implements DialogoNombreNivel.on
             while(progreso<100){
                 SystemClock.sleep(integers[0]);
                 contProgreso.publishProgress(progreso); //llama a onProgress que permitirá publicar los cambios ejecutados en segundo plano
-                progreso++;
+                progreso++; //Podriamos utilizar integers[1] de igual modo pero como se ha implementado la clase de forma interna podemos acceder a todas las variables de la superior
                 if(isCancelled())
                     break;
             }
@@ -288,7 +323,9 @@ public class JuegoActivity extends BaseActivity implements DialogoNombreNivel.on
                 numerarBotones(desordenarBotones());
                 tvFase.setText(getString(R.string.fase, String.valueOf(++numFase)));
                 contadorBotones=1;
+                progreso=0;
                 proBar.setProgress(0);
+
 
                 //aumentamos velocidad controlando que esta no sea negativa
                 if(velocidad-5 <=0)
