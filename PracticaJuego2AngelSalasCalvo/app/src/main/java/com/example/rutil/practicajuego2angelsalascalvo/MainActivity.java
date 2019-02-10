@@ -4,16 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,14 +28,23 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
     SwitchCompat sVibrar, sSonar;
     MediaPlayer mpTiempo, mpRecord;
 
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //1.Iniciar vista
         iniciar();
+        //2.Leer fichero y obtener record
         cargarRecord();
     }
 
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA INICIAR LA VISTA OBTENIENDO LOS ELEMENTOS Y DECLARAR VARIABLES INICIALES
+     */
     public void iniciar(){
         //Referencias
         tvRecordNom = (TextView) findViewById(R.id.tvRecordNom);
@@ -47,18 +52,22 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
         sSonar = (SwitchCompat) findViewById(R.id.swSonar);
         sVibrar = (SwitchCompat) findViewById(R.id.swVibrar);
 
+        //Si se ha seleccionado sonido crear los mediaplayer
         if(sSonar.isChecked()){
             mpTiempo = MediaPlayer.create(this, R.raw.fin);
             mpRecord = MediaPlayer.create(this, R.raw.record);
         }
 
-
         //Establecer puntuacion por defecto
         puntuacion=0;
     }
 
-    public void cargarRecord(){
+    //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO PARA CARGAR EL RECORD ACTUAL DESDE EL FICHERO, SE CREA SI NO EXISTE EL FICHERO
+     */
+    public void cargarRecord(){
         try {
             //Si no se encuentra el archivo salta la excepción
             openFileInput("record.txt");
@@ -90,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO QUE SERA EJECUTADO AL PULSAR EL BOTON JUGAR, INICIA EL ACTIVITY JUEGO
+     * @param view
+     */
     public void jugar(View view){
         Intent i = new Intent(this, ActivityJuego.class);
         i.putExtra(VIBRAR, sVibrar.isChecked());
@@ -97,7 +112,14 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
         startActivityForResult(i, REQUEST_CODE); //Iniciar Activity pasando codigo
     }
 
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO QUE SERÁ EJECUTADO AL PULSAR EL BOTON INFO, MUESTRA ALERTDIALOG CON INFORMACION
+     * @param view
+     */
     public void info(View view){
+        //Crear dialogo
         new AlertDialog.Builder(this)
                 .setView(R.layout.dialogo_info) //Layout personalizado
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -109,15 +131,23 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
                 .show();
     }
 
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA OBTENER LOS DATOS DEL ACTIVITY JUEGO UNA VEZ FINALIZADO
+     * @param reqCode
+     * @param resCode
+     * @param i
+     */
     public void onActivityResult(int reqCode, int resCode, Intent i){
         super.onActivityResult(reqCode, resCode, i);
         if(reqCode==REQUEST_CODE && resCode==RESULT_OK) {
-            puntuacion = i.getIntExtra(PUNTOS,0);
             int record=0;
+            //Obtener puntuación pasado por el intent
+            puntuacion = i.getIntExtra(PUNTOS,0);
 
             //Obtener el record almacenado en fichero
-            try
-            {
+            try{
                 BufferedReader be = new BufferedReader(new InputStreamReader(openFileInput("record.txt")));
                 record= Integer.parseInt(be.readLine());
                 be.close();
@@ -129,11 +159,10 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
 
             //Comprobar si se ha obtenido una puntuación mayor que el record
             if(puntuacion>record){
-                dialogoRecord();
+                dialogoRecord(); //Mostrar dialogo con record
                 if(sSonar.isChecked()) mpRecord.start();
             }else{
-                dialogoPuntos();
-                //Sonar
+                dialogoPuntos(); //Mostrar dialogo informativo con puntos
                 if(sSonar.isChecked()) mpTiempo.start();
             }
         }
@@ -143,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
     //----------------------------------------------------------------------------------------------
 
     /**
-     * METODO PARA MOSTRAR EL DIALOGO QUE PIDE LA CONFIGURACIÓN DEL JUEGO (DIFICULTAD Y NOMBRE)
+     * METODO PARA MOSTRAR EL DIALOGO QUE PIDE EL NOMBRE PARA ESTABLECERLO AL NUEVO RECORD
      */
     public void dialogoRecord(){
         //Creamos el dialogo
@@ -154,8 +183,11 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
         ventEmergente.show(getSupportFragmentManager(), "DialogoRecord"); //Tag??
     }
 
+    //----------------------------------------------------------------------------------------------
+
     /**
-     * SOBRESCRITURA DEL METODO CON EL QUE PODREMOS OBTENER EL NOMBRE INTRODUCIDO
+     * SOBRESCRITURA DEL METODO onAceptarDialogo
+     * OBTENEMOS EL NOMBRE ESTABLECIDO PARA GUARDARLO EN EL FICHERO CON EL NUEVO RECORD
      * @param nombre
      */
     @Override
@@ -177,8 +209,10 @@ public class MainActivity extends AppCompatActivity implements DialogoRecord.onD
         tvRecordNom.setText(nombre);
     }
 
+    //----------------------------------------------------------------------------------------------
+
     /**
-     * METODO PARA MOSTRAR EL DIALOGO CUANDO SE HA PERDIDO LA PARTIDA
+     * METODO PARA MOSTRAR EL DIALOGO AL FINALIZAR EL TIEMPO Y NO CONSEGUIR RECORD
      */
     public void dialogoPuntos(){
         AlertDialog dialogoGanado = new AlertDialog.Builder(this)

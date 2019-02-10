@@ -2,7 +2,6 @@ package com.example.rutil.practicajuego2angelsalascalvo;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,24 +13,13 @@ import android.os.Vibrator;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.graphics.drawable.DrawableWrapper;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Random;
-
-import static java.lang.Thread.sleep;
 
 public class ActivityJuego extends AppCompatActivity {
 
@@ -77,6 +65,8 @@ public class ActivityJuego extends AppCompatActivity {
             R.drawable.p5,
     };
 
+    //----------------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +81,8 @@ public class ActivityJuego extends AppCompatActivity {
         cuentaAtras.execute(3);
     }
 
+    //----------------------------------------------------------------------------------------------
+
     /**
      * SOBRESCRITURA DEL METODO ONBACKPRESSED PARA EVITAR QUE USUARIO CIERRE EL INTENT
      */
@@ -99,6 +91,8 @@ public class ActivityJuego extends AppCompatActivity {
         //doing nothing on pressing Back key
         return;
     }
+
+    //----------------------------------------------------------------------------------------------
 
     /**
      * METODO PARA INICIAR TODOS LOS COMPONENTES Y COMPROBAR SI SE DISPONE DE ACELEROMETRO
@@ -126,7 +120,6 @@ public class ActivityJuego extends AppCompatActivity {
         if(vibrar)
             vibService=(Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 
-
         //Establecer valores variables
         puntuacion=0;
 
@@ -142,10 +135,13 @@ public class ActivityJuego extends AppCompatActivity {
             //Cerramos el activity
             finish();
         }
-
     }
 
     //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA PONER SENSOR A LA ESCUCHA CON LA FUNCIONALIDAD ADECUADA
+     */
     public void establecerListener(){
         //Instanciar objeto de escucha para el sensor con una calse anonima
         escucharAcelerometro = new SensorEventListener() {
@@ -172,6 +168,9 @@ public class ActivityJuego extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO QUE INICIALIZA LA PARTIDA HACIENDO VISIBLES LOS ELENTO E INICIANDO LA BARRA DE PROGRESO
+     */
     public void empezarPartida(){
         proBar.setProgress(300);
         //Ocultar panel de cuenta atras y mostrar el del juego
@@ -196,9 +195,13 @@ public class ActivityJuego extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO PARA COMPROBAR SI LA POSICIÓN DEL PERSONAJE ES IGUAL QUE LA SILUETA Y SI CORRESPONDE
+     */
     public void comprobar(){
         int actual = (int)ivPersonaje.getRotation();
         int objetivo = (int)ivSilueta.getRotation();
+
         //Comprobar si la silueta y el personaje es el mismo
         if(ivPersonaje.getTag().equals(ivSilueta.getTag())) {
             //Comprobar si la rotacion de la silueta y el personaje es igual (con un margen de 2 grados)
@@ -219,7 +222,7 @@ public class ActivityJuego extends AppCompatActivity {
     //----------------------------------------------------------------------------------------------
 
     /**
-     * METODO QUE GENERA
+     * METODO QUE GENERA UNA SILUETA ALEATORIA Y LA SITUA EN UNA POSICION ALEATORIA
      * @return
      */
     public void generarSilueta(){
@@ -243,7 +246,12 @@ public class ActivityJuego extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO PARA EL BOTON SIGUIENTE QUE PERMITE OBTENER OTRO PERSONAJE
+     * @param view
+     */
     public void siguiente(View view){
+        //Controlar que no se salga del array
         if(personajeActual==personaje.length-1)
             personajeActual=0;
         else
@@ -257,7 +265,12 @@ public class ActivityJuego extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO PARA EL BOTON ANTERIOR QUE PERMITE OBTENER OTRO PERSONAJE
+     * @param view
+     */
     public void anterior(View view){
+        //Controlar que no se salga del array
         if(personajeActual==0)
             personajeActual=personaje.length-1;
         else
@@ -299,16 +312,19 @@ public class ActivityJuego extends AppCompatActivity {
          */
         @Override
         protected Integer doInBackground(Integer... integers) {
+            //Realizamos la cuenta atras el numero de veces indicadas
             for(; integers[0]>0 ; integers[0]--){
                 cuentaAtras.publishProgress(integers[0]);
                 //Esperar un segundo
                 SystemClock.sleep(1000);
+                if(isCancelled())
+                    break;
             }
             return cuenta;
         }
 
         /**
-         * METODO PARA PUBLICAR CAMBIOS DE PROGRESO
+         * METODO PARA PUBLICAR CAMBIOS DE PROCESO
          * @param values
          */
         @Override
@@ -319,7 +335,7 @@ public class ActivityJuego extends AppCompatActivity {
         }
 
         /**
-         * METODO QUE SE EJECUTA AL FINALIZAR EL PROGRESO
+         * METODO QUE SE EJECUTA AL FINALIZAR EL PROCESO
          * @param integer
          */
         @Override
@@ -334,10 +350,10 @@ public class ActivityJuego extends AppCompatActivity {
         }
     }
 
-    //==============================================================================================
+//==============================================================================================
 
     /**
-     * TAREA ASINCRONA PARA LA CUENTA ATRÁS INICIAL
+     * TAREA ASINCRONA PARA ACTUALIZAR LA BARRA DE PROGRESO
      */
     //como parametros del asyncTask podemos pasar void si no queremos mandar nada
     private class BarraProgreso extends AsyncTask<Integer, Integer, Integer> {
@@ -350,11 +366,11 @@ public class ActivityJuego extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Integer... integers) {
             int contador = integers[0];
-
+            //Repetir la acción hasta llegar a 0
             while(contador>0){
                 SystemClock.sleep(100);
-                barraProgreso.publishProgress(contador); //llama a onProgress que permitirá publicar los cambios ejecutados en segundo plano
-                contador--; //Podriamos utilizar integers[1] de igual modo pero como se ha implementado la clase de forma interna podemos acceder a todas las variables de la superior
+                barraProgreso.publishProgress(contador);
+                contador--;
                 if(isCancelled())
                     break;
             }
@@ -362,18 +378,18 @@ public class ActivityJuego extends AppCompatActivity {
         }
 
         /**
-         * METODO PARA PUBLICAR CAMBIOS DE PROGRESO
+         * METODO PARA PUBLICAR CAMBIOS DE PROCESO
          * @param values
          */
         @Override
         protected void onProgressUpdate(Integer... values){
             super.onProgressUpdate(values);
-            //Indicar numero de la cuenta atras
+            //Indicar valor de la barra de tareas (En sentido inverso, decrementando)
             proBar.setProgress(values[0]);
         }
 
         /**
-         * METODO QUE SE EJECUTA AL FINALIZAR EL PROGRESO
+         * METODO QUE SE EJECUTA AL FINALIZAR EL PROCESO
          * @param integer
          */
         @Override

@@ -21,13 +21,20 @@ public class DialogoRecord extends DialogFragment implements DialogInterface.OnC
     onDialogoRecord miListener;
 
 
+    /**
+     * CONSTRUCTOR NEWINSTANCE
+     * @param p
+     * @return
+     */
     public static DialogoRecord newInstance(int p){
         puntuacion=p;
         return new DialogoRecord();
     }
 
+    //----------------------------------------------------------------------------------------------
+
     /**
-     * BRESCRITURA DEL METODO OnCreateDialog
+     * SOBRESCRITURA DEL METODO OnCreateDialog
      * @param saveInstanceState
      * @return
      */
@@ -52,7 +59,9 @@ public class DialogoRecord extends DialogFragment implements DialogInterface.OnC
 
     //----------------------------------------------------------------------------------------------
 
-    //Añadir interfaz que obligará a implementar el método indicado**
+    /**
+     * INTERFAZ PARA OBLIGAR A IMPLEMENTAR EL METODO
+     */
     public interface onDialogoRecord{
         public void onAceptarDialogo(String nombre);
     }
@@ -83,16 +92,19 @@ public class DialogoRecord extends DialogFragment implements DialogInterface.OnC
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * SOBRESCRITURA DEL METODO ONCLICK
+     * DECIDIR QUE HACER AL PULSAR ACEPTAR
+     * @param dialog
+     * @param which
+     */
     @Override
     public void onClick(DialogInterface dialog, int which) {
         //Referencias
         etNombre= (EditText)((Dialog)dialog).findViewById(R.id.etNombre);
-
         //Guardar valor del nombre
         nombre=etNombre.getText().toString();
-
+        //Lanzar el metodo para el oyente
         miListener.onAceptarDialogo(nombre);
     }
-
-    //----------------------------------------------------------------------------------------------
 }
