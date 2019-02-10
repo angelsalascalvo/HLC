@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Rotate</string>
+    <string name="etNombre">Nombre</string>
+    <string name="tituloRecord">NUEVO RECORD!</string>
+    <string name="puntuacion">PUNTUACIÓN: </string>
+    <string name="txtRecord">Introduce tu nombre para almacenar el record.</string>
+    <string name="informacion">INFORMACIÓN</string>
+    <string name="txtInfo">Bienvenido a "Rotate", en este juego tendras que rotar tu dispositivo movil para
+    encajar la silueta con el personaje correspondiente. Existen diferentes personajes, por lo que
+    debes ir cambiandolos para seleccionar el adecuado en cada caso.
+    \n\n¿Cuantos conseguiras en 30 segundos?</string>
+    <string name="nombre">Desarrollado por Ángel Salas Calvo</string>
+    <string name="rotate"></string>
+    <string name="vibrar">¿Vibrar?</string>
+    <string name="sonar">¿Sonar?</string>
+    <string name="record">Record:</string>
+    <string name="jugar">JUGAR</string>
+    <string name="info">INFO</string>
+    <string name="tiempo">TIEMPO!</string>
+    <string name="empezar">La partida empieza en...</string>
+</resources>
