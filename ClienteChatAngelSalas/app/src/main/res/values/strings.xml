@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">ClienteChatAngelSalas</string>
+    <string name="app_name">Chat Multiusuario</string>
+    <string name="bConectar">Conectar</string>
+    <string name="ip">IP Servidor</string>
+    <string name="puerto">Puerto</string>
+    <string name="mensaje">Tu mensaje...</string>
 </resources>
