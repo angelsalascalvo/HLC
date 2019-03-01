@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">PracticaJuegoFinalAngelSalasCalvo</string>
+    <string name="midiendo">Midiendo distancias...</string>
+    <string name="NombreJ1">Nombre Piloto 1</string>
+    <string name="NombreJ2">Nombre Piloto 2</string>
+    <string name="Ajustes">CONFIGURACIÓN</string>
+    <string name="jugar">Jugar</string>
+    <string name="rondas3">3</string>
+    <string name="rondas5">5</string>
+    <string name="rondas7">7</string>
+    <string name="numRondas">Rondas por partida</string>
+    <string name="otros">Otros ajustes</string>
+    <string name="sonido">Sonar</string>
+    <string name="vibrar">Vibrar</string>
+    <string name="titConf">CONFIGURA TU PARTIDA</string>
+    <string name="Aceptar">A</string>
 </resources>

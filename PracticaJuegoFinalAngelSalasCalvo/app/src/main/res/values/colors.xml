@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#bf5ecc</color>
+    <color name="colorPrimaryDark">#690784</color>
+    <color name="colorAccent">#bf5ecc</color>
     <color name="jRojo">#d54b57</color>
     <color name="jAzul">#519bcb</color>
+    <color name="colorPulsado">#4b4b4b</color>
 </resources>

@@ -37,6 +37,12 @@ public class BarraCohete extends android.support.v7.widget.AppCompatSeekBar {
     }
 
     @Override
+    public synchronized void setProgress(int progress) {
+        super.setProgress(progress);
+        onSizeChanged(getWidth(), getHeight(), 0, 0);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnabled()) {
             return false;
