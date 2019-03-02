@@ -1,13 +1,11 @@
 package com.example.rutil.practicajuegofinalangelsalascalvo;
 
-import android.animation.ObjectAnimator;
 import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.animation.Animation;
@@ -56,7 +54,7 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
     //----------------------------------------------------------------------------------------------
 
     /**
-     * METODO QUE ACTUARÁ CUANDO LA APLICACIÓN SE REANUDA
+     * SOBRESCRITURA DEL METODO OnResume QUE ACTUARÁ CUANDO LA APLICACIÓN SE REANUDA
      */
     @Override
     public void onResume() {
@@ -69,10 +67,13 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * SOBRESCRITURA DEL METODO onPause QUE ACTUARÁ CUANDO LA APLICACIÓN ENTRE EN ESTADO DE PAUSA
+     */
     @Override
     public void onPause(){
         //Detener la musica si esta sonando
-        if(mpFondo.isPlaying())
+        if(sonar || mpFondo!=null)
             mpFondo.pause();
         super.onPause();
     }
@@ -142,6 +143,8 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
      * @param view
      */
     public void abrirConfiguracion(View view) {
+        //Vibrar
+        if(vibrar)vibService.vibrate(70);
         //Creamos el dialogo
         DialogoAjustes ventEmergente = DialogoAjustes.newInstance(numRondas, sonar, vibrar);
         //Mostrar el dialogo que pide configuracion de la partida
@@ -173,6 +176,8 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
      * @param view
      */
     public void mostrarInfo(View view){
+        //Vibrar
+        if(vibrar)vibService.vibrate(70);
         //Mostrar dialogo de informacion
         AlertDialog dialogoInicio = new AlertDialog.Builder(this)
             .setView(R.layout.dialogo_info) //Layout personalizado
@@ -233,6 +238,4 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
         //Empezar la animacion
         ivLogo.startAnimation(animacionEncoger);
     }
-
-
 }

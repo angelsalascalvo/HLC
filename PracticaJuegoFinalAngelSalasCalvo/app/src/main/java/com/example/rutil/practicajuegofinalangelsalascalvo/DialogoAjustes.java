@@ -10,7 +10,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -94,8 +93,10 @@ public class DialogoAjustes extends DialogFragment implements DialogInterface.On
 
     //----------------------------------------------------------------------------------------------
 
-    //metodo que garantiza que se podrán obtener los datos pasados a traves del metodo que hay que
-    //implementar segun la interfaz
+    /**
+     * SOBRESCRITURA DEL METODO onAttach PARA GARANTIZAR LA OBTENCION DE DATOS A TRAVES DEL METODO DE LA INTERFAZ
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

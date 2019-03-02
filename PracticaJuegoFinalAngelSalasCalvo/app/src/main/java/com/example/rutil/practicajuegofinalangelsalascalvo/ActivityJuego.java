@@ -16,7 +16,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Random;
 
@@ -30,7 +29,7 @@ public class ActivityJuego extends BaseActivity {
     private int velocidad, numRondas, ronda, distanciaJug1, distanciaJug2, contJ1, contJ2;
     private String nomJ1, nomJ2;
     private MovCohetes movCohetes;
-    private MediaPlayer mpFondo, mpPulsar, mpCohete;
+    private MediaPlayer mpFondo, mpPulsar, mpCohete, mpResumen, mpGanador;
     private Vibrator vibService;
 
     @Override
@@ -75,10 +74,13 @@ public class ActivityJuego extends BaseActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * SOBRESCRITURA DEL METODO onPause
+     */
     @Override
     public void onPause(){
         //Detener la musica si esta sonando
-        if(mpFondo.isPlaying())
+        if(sonar || mpFondo!=null)
             mpFondo.pause();
         super.onPause();
     }
@@ -134,6 +136,8 @@ public class ActivityJuego extends BaseActivity {
             mpFondo.setLooping(true);
             mpPulsar = MediaPlayer.create(this, R.raw.clic);
             mpCohete = MediaPlayer.create(this, R.raw.choete);
+            mpResumen=MediaPlayer.create(this, R.raw.resumen);
+            mpGanador=MediaPlayer.create(this, R.raw.ganador);
         }
         if(vibrar)
             vibService=(Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
@@ -155,6 +159,12 @@ public class ActivityJuego extends BaseActivity {
         tvNomJ1.setText(nomJ1);
         tvNomJ2.setText(nomJ2);
 
+        //Establecer imagen
+        bcCohete1.setThumb(getResources().getDrawable(R.drawable.cohete_r_off));
+        bcCohete2.setThumb(getResources().getDrawable(R.drawable.cohete_a_off));
+        bcCohete1.setVisibility(View.VISIBLE);
+        bcCohete2.setVisibility(View.VISIBLE);
+
         //Ocultar naves con interrogante
         bcOcCohete1.setVisibility(View.INVISIBLE);
         bcOcCohete2.setVisibility(View.INVISIBLE);
@@ -162,15 +172,13 @@ public class ActivityJuego extends BaseActivity {
         //Situar las naves en posicion inicial
         bcCohete1.setProgress(0);
         bcCohete2.setProgress(0);
-        bcCohete1.setVisibility(View.VISIBLE);
-        bcCohete2.setVisibility(View.VISIBLE);
-        //Establecer imagen
-        bcCohete1.setThumb(getResources().getDrawable(R.drawable.cohete_r_off));
-        bcCohete2.setThumb(getResources().getDrawable(R.drawable.cohete_a_off));
     }
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO PARA MOSTRAR EL DIALOGO INICIAL AL EMPEZAR UNA PARTIDA
+     */
     public void dialogoInicio(){
         //Mostrar dialogo inicial de partida
         AlertDialog dialogoInicio = new AlertDialog.Builder(this)
@@ -200,6 +208,9 @@ public class ActivityJuego extends BaseActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * METODO PARA ARRANCAR LAS NAVES ESPACIALES Y LLAMAR A LA TAREA ASINCRONA QUE LAS MOVERA
+     */
     public void arrancarNaves(){
         //Establecer velocidad aleatoria
         Random random = new Random();
@@ -318,7 +329,7 @@ public class ActivityJuego extends BaseActivity {
     //----------------------------------------------------------------------------------------------
 
     /**
-     * METODO QUE SE EJECUTA CUANDO AMBOS COHETEN PARA
+     * METODO QUE SE EJECUTA CUANDO AMBOS COHETEN PARAN
      */
     public void finRonda(){
         fin=true;
@@ -329,8 +340,12 @@ public class ActivityJuego extends BaseActivity {
         bcCohete2.setVisibility(View.VISIBLE);
 
         //Detener sonido si esta en reproduccion
-        if(mpCohete.isPlaying()) mpCohete.pause();
+        if(sonar) mpCohete.pause();
         if(sonar)mpPulsar.start();
+
+        //Desactivar botones
+        lyBotonJ1.setEnabled(false);
+        lyBotonJ2.setEnabled(false);
 
         //Calcular distancias
         distanciaJug1 = bcAstronauta.getProgress()-bcCohete1.getProgress();
@@ -355,7 +370,8 @@ public class ActivityJuego extends BaseActivity {
     public void siguienteRonda(){
         //Comprobar si se ha finalizado el juego
         if(ronda==numRondas){
-
+            //Reproducir sonido
+            if(sonar)mpGanador.start();
             //Declarar layout para establecer datos
             LayoutInflater factory = LayoutInflater.from(this);
             View dialog = factory.inflate(R.layout.dialogo_ganador, null);
@@ -395,6 +411,10 @@ public class ActivityJuego extends BaseActivity {
             iniciarVariables();
             //Generar nueva posicion del astronauta
             situarAstronauta();
+            //Activar botones
+            lyBotonJ1.setEnabled(true);
+            lyBotonJ2.setEnabled(true);
+
         }
         //Toast.makeText(this, ""+ronda, Toast.LENGTH_SHORT).show();
     }
@@ -405,6 +425,8 @@ public class ActivityJuego extends BaseActivity {
      * METODO PARA MOSTRAR UN DIALOGO RESUMEN CON LOS DATOS DE LA RONDA JUGADA
      */
     public void dialogoResumen(){
+        //Reproducir sonido
+        if(sonar)mpResumen.start();
         //ocultar info
         tvInfo.setVisibility(View.INVISIBLE);
 
@@ -459,7 +481,7 @@ public class ActivityJuego extends BaseActivity {
     //==============================================================================================
 
     /**
-     * TAREA ASINCRONA PARA ACTUALIZAR LA BARRA DE PROGRESO
+     * TAREA ASINCRONA PARA MOVER DE POSICIÓN LAS SEEKBAR DE LAS NAVES ESPACIALES
      */
     private class MovCohetes extends AsyncTask<Void, Integer, Void> {
 
@@ -489,8 +511,10 @@ public class ActivityJuego extends BaseActivity {
             return null;
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
         /**
-         * METODO PARA PUBLICAR CAMBIOS DE PROCESO
+         * METODO PARA PUBLICAR CAMBIOS DE PROCESO, TRABAJAR CON LA VISTA
          * @param values
          */
         @Override

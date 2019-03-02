@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class BaseActivity extends AppCompatActivity {
-    //Metodo para poner la aplicación en pantalla completa
+    /**
+     * METODO PARA ACTIVAR EL MODO INMERSIVO (PANTALLA COMPLETA) DE LA APLICACIÓN
+     */
     protected  void setModoInmersivo(){
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -16,9 +18,7 @@ public class BaseActivity extends AppCompatActivity {
         );
 
 
-        //Si es una api mayor que 18 KITKAT añadimos funcionalidades las anteriores
-        //Esta comprobación solo se pone si la aplicacion esta disponible para api inferiores a la 18,
-        //si no, se pone directamente las sentencias a continuación de las sentencias anteriores
+        //Comprobacion para versiones inferiores a la 4.4.4 (KitKat)
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
             getWindow().getDecorView().setSystemUiVisibility(
                     getWindow().getDecorView().getSystemUiVisibility()
