@@ -1,14 +1,18 @@
 package com.example.rutil.practicajuegofinalangelsalascalvo;
 
+import android.app.Service;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,9 +27,11 @@ public class ActivityJuego extends BaseActivity {
     private LinearLayout lyBotonJ1, lyBotonJ2;
     private boolean bj1Pulsado, bj2Pulsado, arrancado, cohete1Parado, cohete2Parado, fin, vibrar, sonar;
     private TextView tvMarcadorJ1, tvMarcadorJ2, tvInfo, tvNomJ1, tvNomJ2;
-    private int velocidad, numRondas, ronda;
+    private int velocidad, numRondas, ronda, distanciaJug1, distanciaJug2, contJ1, contJ2;
     private String nomJ1, nomJ2;
     private MovCohetes movCohetes;
+    private MediaPlayer mpFondo, mpPulsar, mpCohete;
+    private Vibrator vibService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +39,56 @@ public class ActivityJuego extends BaseActivity {
         setContentView(R.layout.activity_juego);
         //Modo pantalla completa
         setModoInmersivo();
-        //Referencias
+        //Referenciar los elementos de la vista
+        referenciar();
+        //Coger los datos pasador por el intent
+        cogerDatos();
+        //Audio y sonido
+        sonidoVibrar();
+        //Iniciar las variables del juego
+        iniciarVariables();
+        bcAstronauta.setEnabled(false);
+        bcCohete1.setEnabled(false);
+        bcCohete2.setEnabled(false);
+        ronda=0;
+        //Poner los botones a la escucha
+        botonesEscucha();
+        //Situar astronauta en posicion aleatoria
+        situarAstronauta();
+        //Mostrar dialogo inicial partida
+        dialogoInicio();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO QUE ACTUARÁ CUANDO LA APLICACIÓN SE REANUDA
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        setModoInmersivo();
+        //Continuar con la musica
+        if(mpFondo!=null && sonar)
+            mpFondo.start();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onPause(){
+        //Detener la musica si esta sonando
+        if(mpFondo.isPlaying())
+            mpFondo.pause();
+        super.onPause();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA REFERENCIAR LOS ELEMENTOS DEL LAYOUT
+     */
+    public void referenciar(){
         ivBotonJug1 = (ImageView) findViewById(R.id.ivBotonJug1);
         ivBotonJug2 = (ImageView) findViewById(R.id.ivBotonJug2);
         bcCohete1 = (BarraCohete) findViewById(R.id.bcJugador1);
@@ -48,33 +103,6 @@ public class ActivityJuego extends BaseActivity {
         tvNomJ2 = (TextView) findViewById(R.id.tvNomJ2);
         lyBotonJ1=(LinearLayout)findViewById(R.id.lyBotonJ1);
         lyBotonJ2=(LinearLayout)findViewById(R.id.lyBotonJ2);
-
-        //Coger los datos pasador por el intent
-        cogerDatos();
-
-        //Inicializar variables
-        bj1Pulsado=false;
-        bj2Pulsado=false;
-        arrancado=false;
-        cohete1Parado=true;
-        cohete2Parado=true;
-        fin=false;
-        tvNomJ1.setText(nomJ1);
-        tvNomJ2.setText(nomJ2);
-        ronda=1;
-
-        //Ocultar naves con interrogante
-        bcOcCohete1.setVisibility(View.INVISIBLE);
-        bcOcCohete2.setVisibility(View.INVISIBLE);
-
-        //bcAstronauta.setEnabled(false);
-        //bcCohete1.setEnabled(false);
-        //bcCohete2.setEnabled(false);
-
-        //Poner los botones a la escucha
-        botonesEscucha();
-        //Situar astronauta en posicion aleatoria
-        situarAstronauta();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -95,19 +123,58 @@ public class ActivityJuego extends BaseActivity {
 
     //----------------------------------------------------------------------------------------------
 
-    public void dialogoInicioRonda(){
-        //Comprobar si es la primera ronda
-        if(ronda==1){
-
-        //Comprobar si es la ultima ronda
-        }else if(ronda==numRondas){
-
-        //Si es otra ronda cualquiera
-        }else{
-
+    /**
+     * METODO PARA INICIALIZAR VARIABLES DE SONIDO Y VIBRACIÓN SI SE ACTIVA
+     */
+    public void sonidoVibrar(){
+        //Iniciar audios
+        if(sonar) {
+            mpFondo = MediaPlayer.create(this, R.raw.fondo);
+            mpFondo.start();
+            mpFondo.setLooping(true);
+            mpPulsar = MediaPlayer.create(this, R.raw.clic);
+            mpCohete = MediaPlayer.create(this, R.raw.choete);
         }
+        if(vibrar)
+            vibService=(Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA ESTABLECER EL VALOR INICIAL DE TODAS LAS VARIABLES DEL JUEGO
+     */
+    public void iniciarVariables(){
+        //Inicializar variables
+        bj1Pulsado=false;
+        bj2Pulsado=false;
+        arrancado=false;
+        cohete1Parado=true;
+        cohete2Parado=true;
+        fin=false;
+        tvNomJ1.setText(nomJ1);
+        tvNomJ2.setText(nomJ2);
+
+        //Ocultar naves con interrogante
+        bcOcCohete1.setVisibility(View.INVISIBLE);
+        bcOcCohete2.setVisibility(View.INVISIBLE);
+
+        //Situar las naves en posicion inicial
+        bcCohete1.setProgress(0);
+        bcCohete2.setProgress(0);
+        bcCohete1.setVisibility(View.VISIBLE);
+        bcCohete2.setVisibility(View.VISIBLE);
+        //Establecer imagen
+        bcCohete1.setThumb(getResources().getDrawable(R.drawable.cohete_r_off));
+        bcCohete2.setThumb(getResources().getDrawable(R.drawable.cohete_a_off));
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public void dialogoInicio(){
+        //Mostrar dialogo inicial de partida
         AlertDialog dialogoInicio = new AlertDialog.Builder(this)
-                .setView(R.layout.dialogo_inicio_ronda) //Layout personalizado
+            .setView(R.layout.dialogo_inicio_ronda) //Layout personalizado
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -115,8 +182,6 @@ public class ActivityJuego extends BaseActivity {
                 })
                 .setCancelable(false)
                 .show();
-
-
     }
 
     //----------------------------------------------------------------------------------------------
@@ -130,7 +195,7 @@ public class ActivityJuego extends BaseActivity {
         int posicion=random.nextInt(700)+300;
         bcAstronauta.setProgress(posicion);
 
-        Toast.makeText(this, posicion+"", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, posicion+"", Toast.LENGTH_SHORT).show();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -138,11 +203,23 @@ public class ActivityJuego extends BaseActivity {
     public void arrancarNaves(){
         //Establecer velocidad aleatoria
         Random random = new Random();
-        velocidad=random.nextInt(18)+9;
-        Toast.makeText(this, velocidad+"",Toast.LENGTH_SHORT).show();
+        velocidad=random.nextInt(16)+9;
+        //Toast.makeText(this, velocidad+"",Toast.LENGTH_SHORT).show();
         //Indicar que los cohetes no estan parados
         cohete1Parado=false;
         cohete2Parado=false;
+
+        //Emitir sonido
+        if(sonar){
+            mpCohete.seekTo(0);
+            mpCohete.start();
+        }
+        //Vibrar
+        if(vibrar)vibService.vibrate(100);
+
+        //Establecer imagen
+        bcCohete1.setThumb(getResources().getDrawable(R.drawable.cohete_r_on));
+        bcCohete2.setThumb(getResources().getDrawable(R.drawable.cohete_a_on));
 
         //Creamos tarea asincrona y la ejecutamos
         movCohetes=new MovCohetes();
@@ -183,12 +260,14 @@ public class ActivityJuego extends BaseActivity {
                 //Actualizar variable
                 bj1Pulsado=false;
                 cohete1Parado=true;
+                //Vibrar
+                if(vibrar)vibService.vibrate(100);
                 //Cambiar color del boton
                 ivBotonJug1.setBackgroundColor(getResources().getColor(R.color.jRojo));
                 tvNomJ1.setBackgroundColor(getResources().getColor(R.color.jRojo));
                 //Comprobar si el otro boton tambien se ha soltado
                 if((!bj2Pulsado) && arrancado)
-                    finPartida();
+                    finRonda();
             }
         });
 
@@ -223,13 +302,15 @@ public class ActivityJuego extends BaseActivity {
                 //Actualizar variable
                 bj2Pulsado=false;
                 cohete2Parado=true;
+                //Vibrar
+                if(vibrar)vibService.vibrate(100);
                 //Cambiar color del boton
                 ivBotonJug2.setBackgroundColor(getResources().getColor(R.color.jAzul));
                 tvNomJ2.setBackgroundColor(getResources().getColor(R.color.jAzul));
 
                 //Comprobar si el otro boton tambien se ha soltado
                 if((!bj1Pulsado) && arrancado)
-                    finPartida();
+                    finRonda();
             }
         });
     }
@@ -239,7 +320,7 @@ public class ActivityJuego extends BaseActivity {
     /**
      * METODO QUE SE EJECUTA CUANDO AMBOS COHETEN PARA
      */
-    public void finPartida(){
+    public void finRonda(){
         fin=true;
         //Mostrar Cohete
         bcOcCohete1.setVisibility(View.INVISIBLE);
@@ -247,10 +328,135 @@ public class ActivityJuego extends BaseActivity {
         bcOcCohete2.setVisibility(View.INVISIBLE);
         bcCohete2.setVisibility(View.VISIBLE);
 
+        //Detener sonido si esta en reproduccion
+        if(mpCohete.isPlaying()) mpCohete.pause();
+        if(sonar)mpPulsar.start();
+
+        //Calcular distancias
+        distanciaJug1 = bcAstronauta.getProgress()-bcCohete1.getProgress();
+        distanciaJug2 = bcAstronauta.getProgress()-bcCohete2.getProgress();
+        //Quitar simbolo negativo
+        if(distanciaJug1<0) distanciaJug1*=-1;
+        if(distanciaJug2<0) distanciaJug2*=-1;
+
+        //Si no hay empate se suma el numero de ronda
+        if(distanciaJug1!=distanciaJug2)
+            ronda++;
+
         //Mostrar info
         tvInfo.setVisibility(View.VISIBLE);
     }
 
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA REINICIAR TODOO CARGAR LA SIGUIENTE RONDA DE LA PARTIDA
+     */
+    public void siguienteRonda(){
+        //Comprobar si se ha finalizado el juego
+        if(ronda==numRondas){
+
+            //Declarar layout para establecer datos
+            LayoutInflater factory = LayoutInflater.from(this);
+            View dialog = factory.inflate(R.layout.dialogo_ganador, null);
+
+            //Referencias a los objetos del layout
+            TextView tvTituloGanador = (TextView) dialog.findViewById(R.id.tvTituloGanador);
+            TextView tvResumenFinal = (TextView) dialog.findViewById(R.id.tvResumenFinal);
+
+            //Establecer valores
+            if(contJ1>contJ2)
+                tvTituloGanador.setText("ENHORABUENA "+nomJ1.toUpperCase()+"!");
+            if(contJ2>contJ1)
+                tvTituloGanador.setText("ENHORABUENA "+nomJ2.toUpperCase()+"!");
+
+            tvResumenFinal.setText(nomJ1+" ("+contJ1+"p)  |  "+nomJ2+" ("+contJ2+"p)");
+
+
+            //Mostrar dialogo con el resumen de la partida
+            AlertDialog dialogoGanador = new AlertDialog.Builder(this)
+                    .setView(dialog)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Al pulsar aceptar se vuelve a la pantalla principal
+                            finish();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        //En caso contrario reiniciamos los elementos
+        }else{
+            setModoInmersivo();
+            //Establecer valores a los contadores
+            tvMarcadorJ1.setText(""+contJ1);
+            tvMarcadorJ2.setText(""+contJ2);
+            //Reiniciar valores iniciales
+            iniciarVariables();
+            //Generar nueva posicion del astronauta
+            situarAstronauta();
+        }
+        //Toast.makeText(this, ""+ronda, Toast.LENGTH_SHORT).show();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA MOSTRAR UN DIALOGO RESUMEN CON LOS DATOS DE LA RONDA JUGADA
+     */
+    public void dialogoResumen(){
+        //ocultar info
+        tvInfo.setVisibility(View.INVISIBLE);
+
+        //Declarar layout para establecer datos
+        LayoutInflater factory = LayoutInflater.from(this);
+        View dialog = factory.inflate(R.layout.dialogo_ronda, null);
+
+        //Referencias a los objetos del layout
+        TextView tvNumRonda = (TextView) dialog.findViewById(R.id.tvNumRonda);
+        TextView tvDistanciaJ1 = (TextView) dialog.findViewById(R.id.tvDistanciaJ1);
+        TextView tvDistanciaJ2 = (TextView) dialog.findViewById(R.id.tvDistanciaJ2);
+        TextView tvGanadorRonda = (TextView) dialog.findViewById(R.id.tvGanadorRonda);
+        TextView tvPuntuacion1 = (TextView) dialog.findViewById(R.id.tvPuntuacion1);
+        TextView tvPuntuacion2 = (TextView) dialog.findViewById(R.id.tvPuntuacion2);
+
+        //Establecer valores segun partida a los elementos del layout
+        tvNumRonda.setText(ronda+"/"+numRondas);
+        tvDistanciaJ1.setText(nomJ1+": "+distanciaJug1+"ft.");
+        tvDistanciaJ2.setText(nomJ2+": "+distanciaJug2+"ft.");
+
+        if(distanciaJug1<distanciaJug2){
+            tvGanadorRonda.setText(nomJ1+" gana esta ronda!");
+            contJ1++;
+        }else if(distanciaJug2<distanciaJug1){
+            tvGanadorRonda.setText(nomJ2+" gana esta ronda!");
+            contJ2++;
+        }else{
+            tvGanadorRonda.setText("Empate, se repite la ronda!");
+        }
+
+        tvPuntuacion1.setText(""+contJ1);
+        tvPuntuacion2.setText(""+contJ2);
+
+        try {
+            //Mostrar dialogo con el resumen de la partida
+            AlertDialog dialogoInicio = new AlertDialog.Builder(this)
+                    .setView(dialog)
+                    .setPositiveButton("Siguiente", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            siguienteRonda();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+            }
+        catch (WindowManager.BadTokenException e) {
+            //Capturar excepción que puede producirse al intentar mostrar el dialogo sin tener el foco la ventana
+        }
+    }
+
+    //==============================================================================================
 
     /**
      * TAREA ASINCRONA PARA ACTUALIZAR LA BARRA DE PROGRESO
@@ -272,10 +478,14 @@ public class ActivityJuego extends BaseActivity {
                 //Llamada al metodo que realizará los cambios en la vista
                 movCohetes.publishProgress(posicionCohete);
             }while ((fin==false) && posicionCohete<1000);
+            //Permanecer mientras no se suelten los botones
+            while(fin==false){
+                SystemClock.sleep(100);
+            }
             //Pausa
-            SystemClock.sleep(5000);
-
-            Log.d("FINN","S");
+            SystemClock.sleep(2500);
+            //Lamada al metodo onProgressUpdate para mostrar dialogo resumen
+            movCohetes.publishProgress(-1);
             return null;
         }
 
@@ -287,40 +497,34 @@ public class ActivityJuego extends BaseActivity {
         protected void onProgressUpdate(Integer... values){
             Log.d("navess", ""+values[0]);
 
-            //Comprobar que no se ha detenido ya el cohete
-            if(!cohete1Parado) {
-                bcCohete1.setProgress(values[0]);
-            }
-
-            //Comprobar que no se ha detenido ya el cohete
-            if(!cohete2Parado) {
-                bcCohete2.setProgress(values[0]);
-            }
-
-            //Al llegar a 200 ocultar naves
-            if(values[0]==200) {
-                bcOcCohete1.setProgress(200);
-                bcOcCohete2.setProgress(200);
-                //Comprobar que no se ha detenido antes
-                if (bcCohete1.getProgress() >= 200) {
-                    bcOcCohete1.setVisibility(View.VISIBLE);
-                    bcCohete1.setVisibility(View.INVISIBLE);
+            if(values[0]==-1) {
+                dialogoResumen();
+            }else {
+                //Comprobar que no se ha detenido ya el cohete
+                if (!cohete1Parado) {
+                    bcCohete1.setProgress(values[0]);
                 }
-                if (bcCohete2.getProgress() >= 200) {
-                    bcOcCohete2.setVisibility(View.VISIBLE);
-                    bcCohete2.setVisibility(View.INVISIBLE);
+
+                //Comprobar que no se ha detenido ya el cohete
+                if (!cohete2Parado) {
+                    bcCohete2.setProgress(values[0]);
+                }
+
+                //Al llegar a 200 ocultar naves
+                if (values[0] == 200) {
+                    bcOcCohete1.setProgress(200);
+                    bcOcCohete2.setProgress(200);
+                    //Comprobar que no se ha detenido antes
+                    if (bcCohete1.getProgress() >= 200) {
+                        bcOcCohete1.setVisibility(View.VISIBLE);
+                        bcCohete1.setVisibility(View.INVISIBLE);
+                    }
+                    if (bcCohete2.getProgress() >= 200) {
+                        bcOcCohete2.setVisibility(View.VISIBLE);
+                        bcCohete2.setVisibility(View.INVISIBLE);
+                    }
                 }
             }
-        }
-
-        @Override
-        protected  void onPostExecute(Void value){
-
-        }
-
-        @Override
-        protected void onCancelled(Void value){
-
         }
     }
 }

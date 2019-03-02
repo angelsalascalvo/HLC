@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 /**
@@ -20,12 +22,19 @@ public class DialogoAjustes extends DialogFragment implements DialogInterface.On
     protected SwitchCompat swSonar, swVibrar;
     protected RadioGroup rgBotones;
     onDialogoAjustes miListener;
+    private RadioButton rb3R, rb5R, rb7R;
+    private static int numRondas;
+    private static boolean vibrar, sonar;
 
     /**
      * CONSTRUCTOR NewInstance
      * @return
      */
-    public static  DialogoAjustes newInstance(){
+    public static  DialogoAjustes newInstance(int nr, boolean s, boolean v){
+        numRondas=nr;
+        sonar=s;
+        vibrar=v;
+
         return new DialogoAjustes();
     }
 
@@ -42,12 +51,34 @@ public class DialogoAjustes extends DialogFragment implements DialogInterface.On
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Obtener inflador del layout
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialogo_ajustes, null);
 
         //Crear el cuadro de dialogo
-        builder.setView(inflater.inflate(R.layout.dialogo_ajustes, null)) //establecer el layout personalizado
+        builder.setView(view) //establecer el layout personalizado
                 .setPositiveButton(android.R.string.yes, this)
                 .setNegativeButton(android.R.string.cancel, this)
                 .setCancelable(false);
+        //Referencias
+        rb3R = (RadioButton) view.findViewById(R.id.rb3R);
+        rb5R = (RadioButton) view.findViewById(R.id.rb5R);
+        rb7R = (RadioButton) view.findViewById(R.id.rb7R);
+        swSonar = (SwitchCompat) view.findViewById(R.id.swSonido);
+        swVibrar = (SwitchCompat) view.findViewById(R.id.swVibrar);
+
+        //Establecer estado inicial a los componentes
+        switch (numRondas){
+            case 3:
+                rb3R.setChecked(true);
+                break;
+            case 5:
+                rb5R.setChecked(true);
+                break;
+            case 7:
+                rb7R.setChecked(true);
+                break;
+        }
+        swSonar.setChecked(sonar);
+        swVibrar.setChecked(vibrar);
 
         return builder.create();
     }
@@ -98,7 +129,7 @@ public class DialogoAjustes extends DialogFragment implements DialogInterface.On
         rgBotones = (RadioGroup)((Dialog)dialog).findViewById(R.id.grupoRondas);
 
         //Establecer el numero de rondas segun lo indicado
-        int numRondas = 3;
+        numRondas = 3;
         int nivel = rgBotones.getCheckedRadioButtonId();
         switch (nivel){
             case R.id.rb3R:

@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">PracticaJuegoFinalAngelSalasCalvo</string>
+    <string name="app_name">Orbit</string>
     <string name="midiendo">Midiendo distancias...</string>
-    <string name="NombreJ1">Nombre Piloto 1</string>
-    <string name="NombreJ2">Nombre Piloto 2</string>
+    <string name="NombreJ1">NOMBRE PILOTO 1</string>
+    <string name="NombreJ2">NOMBRE PILOTO 2</string>
     <string name="Ajustes">CONFIGURACIÓN</string>
     <string name="jugar">Jugar</string>
     <string name="rondas3">3</string>
@@ -12,6 +12,21 @@
     <string name="otros">Otros ajustes</string>
     <string name="sonido">Sonar</string>
     <string name="vibrar">Vibrar</string>
+    <string name="variacion">Veamos la variación...</string>
     <string name="titConf">CONFIGURA TU PARTIDA</string>
-    <string name="Aceptar">A</string>
+    <string name="titRondaInicial">EMPEZAMOS</string>
+    <string name="inicioRonda">Hola pilotos! ¿Estáis preparados para el rescate?\nComenzaremos cuando despeguéis los cohetes dejando pulsado el botón inferior.
+    \n\nMucho cuidado, el cohete se detendrá cuando soltéis este botón. Debéis ser precisos para realizar la conexión con el astronauta.</string>
+    <string name="siguienteRonda">¿Preparados para la siguiente ronda?</string>
+    <string name="titRonda">RESUMEN</string>
+    <string name="numRonda"></string>
+    <string name="txtGanador">Has sido el piloto más exacto.</string>
+    <string name="txtGanador2">Gracias a ti hemos podido completar el rescate con éxito!</string>
+    <string name="gandorRonda">X gana esta ronda!</string>
+    <string name="distanciaJ1"></string>
+    <string name="distanciaJ2"></string>
+    <string name="titInfo">INFORMACIÓN</string>
+    <string name="txtInfo">Bienvenido a <b>Orbit</b>, un minijuego para 2 jugadores donde ganará aquel que consiga detener su cohete espacial más próximo al astronauta perdido.\n\nPara empezar la partida los dos jugadores deben mantener presionados los botones inferiores, el cohete se detendrá al soltar el botón.
+        \nTen en cuenta que no podrás ver en todo momento como se desplaza el cohete... si no sería muy sencillo. ¿No te parece?</string>
+    <string name="desarrollado">Desarrollado por Ángel Salas Calvo</string>
 </resources>

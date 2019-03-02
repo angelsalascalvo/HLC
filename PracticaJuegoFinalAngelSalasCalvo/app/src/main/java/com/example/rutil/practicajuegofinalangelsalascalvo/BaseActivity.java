@@ -15,6 +15,7 @@ public class BaseActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
         );
 
+
         //Si es una api mayor que 18 KITKAT añadimos funcionalidades las anteriores
         //Esta comprobación solo se pone si la aplicacion esta disponible para api inferiores a la 18,
         //si no, se pone directamente las sentencias a continuación de las sentencias anteriores
@@ -25,5 +26,4 @@ public class BaseActivity extends AppCompatActivity {
             );
         }
     }
-
 }

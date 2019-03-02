@@ -1,9 +1,14 @@
 package com.example.rutil.practicajuegofinalangelsalascalvo;
 
 import android.animation.ObjectAnimator;
+import android.app.Service;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,12 +23,13 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
     public final static String NUMRONDAS="numRondas";
     public final static String VIBRAR="vibrar";
     public final static String SONAR="sonar";
-    public final static int REQUEST_CODE=1234;
 
     private ImageView ivLogo;
     private EditText etNomJ1, etNomJ2;
     private int numRondas;
     private boolean vibrar, sonar;
+    private MediaPlayer mpFondo, mpPulsar;
+    private Vibrator vibService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +48,63 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
         //Iniciar variables
         numRondas=3;
         vibrar=true;
-        sonar=false;
+        sonar=true;
+        //Audio y sonido
+        sonidoVibrar();
     }
 
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO QUE ACTUARÁ CUANDO LA APLICACIÓN SE REANUDA
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        setModoInmersivo();
+        //Continuar con la musica
+        if(mpFondo!=null && sonar)
+            mpFondo.start();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onPause(){
+        //Detener la musica si esta sonando
+        if(mpFondo.isPlaying())
+            mpFondo.pause();
+        super.onPause();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA INICIALIZAR VARIABLES DE SONIDO Y VIBRACIÓN SI SE ACTIVA
+     */
+    public void sonidoVibrar(){
+        //Iniciar audios
+        if(sonar) {
+            mpFondo = MediaPlayer.create(this, R.raw.fondo);
+            if(!mpFondo.isPlaying()) {
+                mpFondo.start();
+                mpFondo.setLooping(true);
+            }
+            mpPulsar = MediaPlayer.create(this, R.raw.clic);
+        }else{
+            if(mpFondo!=null)
+                mpFondo.pause();
+        }
+        if(vibrar)
+            vibService=(Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+    }
+
+    //-----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA ABRIR EL ACTIVITY DE JUEGO Y EMPEZAR LA PARTIDA
+     * @param view
+     */
     public void jugar(View view){
         Intent i = new Intent(this, ActivityJuego.class);
         //Crear bundle para pasar muchos datos
@@ -67,9 +127,12 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
 
         //Enviar bundle con el intent
         i.putExtras(datos);
-
+        //Sonar
+        if(sonar) mpPulsar.start();
+        //Vibrar
+        if(vibrar)vibService.vibrate(100);
         //Abrir la activity
-        startActivityForResult(i, REQUEST_CODE);
+        startActivity(i);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -80,7 +143,7 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
      */
     public void abrirConfiguracion(View view) {
         //Creamos el dialogo
-        DialogoAjustes ventEmergente = DialogoAjustes.newInstance();
+        DialogoAjustes ventEmergente = DialogoAjustes.newInstance(numRondas, sonar, vibrar);
         //Mostrar el dialogo que pide configuracion de la partida
         ventEmergente.show(getSupportFragmentManager(), "DialogoAjustes"); //Tag??
     }
@@ -95,10 +158,32 @@ public class MainActivity extends BaseActivity implements DialogoAjustes.onDialo
      */
     @Override
     public void onAceptarDialogo(int numRondas, boolean sonar, boolean vibrar) {
+        setModoInmersivo();
         //Establecer configuración las variables
         this.numRondas=numRondas;
         this.sonar=sonar;
         this.vibrar=vibrar;
+        sonidoVibrar();
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * METODO PARA MOSTRAR EL DIALOGO DE INFORMACIÓN
+     * @param view
+     */
+    public void mostrarInfo(View view){
+        //Mostrar dialogo de informacion
+        AlertDialog dialogoInicio = new AlertDialog.Builder(this)
+            .setView(R.layout.dialogo_info) //Layout personalizado
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    setModoInmersivo();
+                }
+            })
+            .setCancelable(false)
+            .show();
     }
 
     //----------------------------------------------------------------------------------------------

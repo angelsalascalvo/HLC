@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tvTitulo"
+        android:id="@+id/tvTituloGanador"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
-        android:text="@string/titConf"
+        android:text="@string/titRondaInicial"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
@@ -21,122 +21,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <RadioGroup
-        android:id="@+id/grupoRondas"
-        android:layout_width="320dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/tvTxt1"
-        tools:layout_editor_absoluteX="32dp">
-
-        <RadioButton
-            android:id="@+id/rb3R"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="0dp"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="@string/rondas3"
-            android:textAlignment="center" />
-
-        <RadioButton
-            android:id="@+id/rb5R"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/rondas5"
-            android:textAlignment="center" />
-
-        <RadioButton
-            android:id="@+id/rb7R"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1"
-            android:text="@string/rondas7" />
-    </RadioGroup>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTxt2">
-
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/swSonido"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:textAlignment="inherit"
-            app:layout_constraintEnd_toStartOf="@+id/swVibrar"
-            app:layout_constraintHorizontal_bias="0.56"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/grupoRondas" />
-
-        <TextView
-            android:id="@+id/tvSonido"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/sonido"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/swVibrar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/swSonido"
-            app:layout_constraintTop_toBottomOf="@+id/grupoRondas" />
-
-        <TextView
-            android:id="@+id/tvVibrar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/vibrar"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-    </LinearLayout>
-
     <TextView
-        android:id="@+id/tvTxt1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/numRondas"
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
-
-    <TextView
-        android:id="@+id/tvTxt2"
+        android:id="@+id/tvTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:text="@string/otros"
+        android:layout_marginBottom="16dp"
+        android:text="@string/inicioRonda"
         android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grupoRondas" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTituloGanador" />
 </android.support.constraint.ConstraintLayout>

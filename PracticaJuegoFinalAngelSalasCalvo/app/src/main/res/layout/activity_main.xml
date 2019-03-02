@@ -16,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
+            android:focusableInTouchMode="true"
             app:srcCompat="@drawable/fondo1" />
 
     </android.support.constraint.ConstraintLayout>
@@ -40,10 +41,11 @@
             android:id="@+id/bJugar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="60dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="32dp"
             android:background="@drawable/boton_jugar"
+
             android:onClick="jugar"
             android:text="@string/jugar"
             android:textColor="#ffffff"
@@ -58,9 +60,9 @@
             android:id="@+id/tilNombreJ1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="45dp"
+            android:layout_marginEnd="32dp"
             android:textColorHint="@android:color/background_light"
             app:boxBackgroundColor="@android:color/background_light"
             app:boxStrokeColor="@android:color/background_light"
@@ -75,6 +77,9 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/NombreJ1"
                 android:maxLength="8"
+                android:maxLines="1"
+                android:lines="1"
+                android:singleLine="true"
                 android:textColor="@android:color/background_light" />
         </android.support.design.widget.TextInputLayout>
 
@@ -82,8 +87,8 @@
             android:id="@+id/tilNombreJ2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
             android:textColorHint="@android:color/background_light"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -95,6 +100,9 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/NombreJ2"
                 android:maxLength="8"
+                android:maxLines="1"
+                android:lines="1"
+                android:singleLine="true"
                 android:textColor="@android:color/background_light" />
         </android.support.design.widget.TextInputLayout>
 
@@ -102,13 +110,14 @@
             android:id="@+id/lyConfiguracion"
             android:layout_width="match_parent"
             android:layout_height="29dp"
-            android:layout_marginStart="24dp"
-            android:onClick="abrirConfiguracion"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="32dp"
             android:background="@android:color/transparent"
             android:clickable="true"
+
             android:gravity="center"
+            android:onClick="abrirConfiguracion"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -130,6 +139,19 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="35dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:onClick="mostrarInfo"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/info" />
 
     </android.support.constraint.ConstraintLayout>
 
